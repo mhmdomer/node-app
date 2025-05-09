@@ -93,6 +93,12 @@ const PollView = ({ pollId, token, onBackToCreate }: PollViewProps) => {
       });
       
       setVoteSuccess(true);
+      // update the progress bar and increase the vote count
+      setSelectedOption(null);
+      setVoteSuccess(true);
+      setTimeout(() => {
+        setVoteSuccess(false);
+      }, 3000);
       // No need to fetch poll data as we'll get update via WebSocket
     } catch (err: any) {
       console.error('Error voting:', err);

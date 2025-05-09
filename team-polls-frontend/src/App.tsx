@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { io } from 'socket.io-client'
 import axios from 'axios'
 import './App.css'
 import PollCreation from './components/PollCreation'
@@ -14,38 +13,35 @@ function App() {
   const [currentPollId, setCurrentPollId] = useState<string | null>(null)
   const [view, setView] = useState<'auth' | 'create' | 'view'>(!token ? 'auth' : 'create')
 
-  // Check for poll ID in URL parameters on initial load
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const pollIdFromUrl = urlParams.get('poll');
-    
+  
     if (pollIdFromUrl) {
       setCurrentPollId(pollIdFromUrl);
-      setView('view');
     }
   }, []);
-
-  // Save token to localStorage when it changes
+  
   useEffect(() => {
-    console.log('urlParams');
     if (token) {
-      localStorage.setItem('token', token)
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      // Always show poll if pollId is present in URL or state
-      const urlParams = new URLSearchParams(window.location.search);
-      const pollIdFromUrl = urlParams.get('poll');
-      if (pollIdFromUrl) {
-        setCurrentPollId(pollIdFromUrl);
-        setView('view');
-      } else {
-        setView(currentPollId ? 'view' : 'create')
-      }
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      setView(currentPollId ? 'view' : 'create');
     } else {
-      localStorage.removeItem('token')
-      delete axios.defaults.headers.common['Authorization']
-      setView('auth')
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+      setView('auth');
     }
-  }, [token, currentPollId])
+  }, [token]);
+  
+  useEffect(() => {
+    // If currentPollId changes and we have a token, show 'view'
+    if (token && currentPollId) {
+      setView('view');
+    }
+  }, [currentPollId]);
+  
 
   // Handle authentication
   const handleAuth = (newToken: string) => {

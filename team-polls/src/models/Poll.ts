@@ -198,4 +198,23 @@ export class PollModel {
         options
       };
     }
+
+    /**
+     * Close expired polls
+     * Returns the number of polls closed
+     */
+    static async closeExpiredPolls(): Promise<void> {
+      try {
+        const result = await query(`
+          UPDATE polls 
+          SET closed = true 
+          WHERE 
+            expires_at <= NOW() AND 
+            closed = false
+          RETURNING id
+        `);
+      } catch (error) {
+        throw error;
+      }
+    }
 }

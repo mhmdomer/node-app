@@ -35,33 +35,44 @@ export class PollController {
     }
   }
   
-  /**
-   * Cast a vote on a poll
-   * POST /poll/:id/vote
-   */
-  static async castVote(req: Request, res: Response): Promise<void> {
-    try {
-      if (!req.user) {
-        throw new AppError('Authentication required', 401);
-      }
-      
-      const pollId = req.params.id;
-      const { optionId } = req.body;
-      
-      // Create or update vote
-      await VoteModel.create({
-        userId: req.user.userId,
+/**
+ * Cast a vote on a poll
+ * POST /poll/:id/vote
+ */
+static async castVote(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      throw new AppError('Authentication required', 401);
+    }
+    const pollId = req.params.id;
+    const { optionId } = req.body;
+    
+    // Create or update vote
+    await VoteModel.create({
+      userId: req.user.userId,
+      pollId,
+      optionId
+    });
+
+    const io = req.app.get('io');
+    if (io) {
+      logger.info(`Publishing poll update for poll ${pollId}`);
+      io.to(`poll:${pollId}`).emit('poll-update', {
         pollId,
-        optionId
+        message: 'Vote recorded'
       });
-      
-      res.status(200).json({
-        success: true,
-        message: 'Vote recorded successfully',
-        pollId,
-        optionId
-      });
-    } catch (error: any) {
+    } else {
+      logger.warn('Socket.IO instance not available');
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: 'Vote recorded successfully',
+      pollId,
+      optionId
+    });
+  
+  } catch (error: any) {
       if (error.message === 'Poll not found') {
         throw new AppError('Poll not found', 404);
       } else if (error.message === 'Poll is closed or expired') {
@@ -73,7 +84,7 @@ export class PollController {
       logger.error('Error casting vote:', error);
       throw new AppError('Failed to cast vote', 500);
     }
-  }
+}
   
   /**
    * Get poll details and results

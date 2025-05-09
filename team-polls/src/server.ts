@@ -61,6 +61,8 @@ app.use('/poll', pollRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+app.set('io', io);
+
 // Handle WebSocket connections
 io.on('connection', (socket) => {
   logger.info(`Client connected: ${socket.id}`);
