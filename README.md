@@ -111,6 +111,17 @@ See the [.env file](./team-polls/.env) for the full list of configuration option
 
 The frontend uses proxying to communicate with the backend API and doesn't require specific environment variables.
 
+## Screenshots
+
+### 1. Poll Creation Form
+![Poll Creation](1.png)
+
+### 2. Before voting
+![Voting](2.png)
+
+### 3. When voting
+![Live Results](3.png)
+
 ## License
 
 ISC

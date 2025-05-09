@@ -27,10 +27,19 @@ function App() {
 
   // Save token to localStorage when it changes
   useEffect(() => {
+    console.log('urlParams');
     if (token) {
       localStorage.setItem('token', token)
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      setView(currentPollId ? 'view' : 'create')
+      // Always show poll if pollId is present in URL or state
+      const urlParams = new URLSearchParams(window.location.search);
+      const pollIdFromUrl = urlParams.get('poll');
+      if (pollIdFromUrl) {
+        setCurrentPollId(pollIdFromUrl);
+        setView('view');
+      } else {
+        setView(currentPollId ? 'view' : 'create')
+      }
     } else {
       localStorage.removeItem('token')
       delete axios.defaults.headers.common['Authorization']
