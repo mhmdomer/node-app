@@ -2,6 +2,11 @@
 
 A full-stack application for creating and voting on polls in real-time.
 
+Loom video demo: https://www.loom.com/share/35a00d372afb48f585f1298526a365b9
+
+![image](https://github.com/user-attachments/assets/2167b850-be55-4477-a08c-3dd4a56c3b7d)
+
+
 ## Project Structure
 
 The project consists of two main components:
